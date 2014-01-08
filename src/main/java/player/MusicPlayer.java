@@ -167,7 +167,7 @@ class SceneGenerator {
       public void handle(ActionEvent actionEvent) {
 
         MediaPlayer player = mediaView.getMediaPlayer();
-        MediaPlayer nextPlayer = createPlayer(getURLFileName(shuffler.next(player.getCycleDuration().toSeconds()).getFileName()));
+        MediaPlayer nextPlayer = createPlayer(getURLFileName(shuffler.next(player.getCurrentTime().toSeconds()).getFileName()));
 
         mediaView.setMediaPlayer(nextPlayer);
         player.currentTimeProperty().removeListener(progressChangeListener);
@@ -218,7 +218,7 @@ class SceneGenerator {
         if (event.getButton() == MouseButton.PRIMARY) {
           Song song = listView.getSelectionModel().getSelectedItem();
           MediaPlayer player = mediaView.getMediaPlayer();
-          shuffler.setCurrent(player.getCycleDuration().toSeconds(), song);
+          shuffler.setCurrent(player.getCurrentTime().toSeconds(), song);
           MediaPlayer nextPlayer = createPlayer(getURLFileName(song.getFileName()));
 
           mediaView.setMediaPlayer(nextPlayer);
