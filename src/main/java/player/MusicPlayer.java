@@ -117,7 +117,7 @@ class SceneGenerator {
       public void handle(ActionEvent actionEvent) {
 
         // get the first song
-        Song song = shuffler.initialize(tf.getText());
+        Song song = shuffler.initialize(tf.getText(), "/desktop-player");
 
         String filename = getURLFileName(song.getFileName());
 
@@ -167,7 +167,8 @@ class SceneGenerator {
       public void handle(ActionEvent actionEvent) {
 
         MediaPlayer player = mediaView.getMediaPlayer();
-        MediaPlayer nextPlayer = createPlayer(getURLFileName(shuffler.next(player.getCurrentTime().toSeconds()).getFileName()));
+        MediaPlayer nextPlayer = createPlayer(getURLFileName(shuffler.next(player.getCurrentTime().toSeconds(),
+            player.getTotalDuration().toSeconds()).getFileName()));
 
         mediaView.setMediaPlayer(nextPlayer);
         player.currentTimeProperty().removeListener(progressChangeListener);
@@ -218,7 +219,7 @@ class SceneGenerator {
         if (event.getButton() == MouseButton.PRIMARY) {
           Song song = listView.getSelectionModel().getSelectedItem();
           MediaPlayer player = mediaView.getMediaPlayer();
-          shuffler.setCurrent(player.getCurrentTime().toSeconds(), song);
+          shuffler.setCurrent(player.getCurrentTime().toSeconds(), player.getTotalDuration().toSeconds(), song);
           MediaPlayer nextPlayer = createPlayer(getURLFileName(song.getFileName()));
 
           mediaView.setMediaPlayer(nextPlayer);
