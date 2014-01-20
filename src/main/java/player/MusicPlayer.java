@@ -92,6 +92,7 @@ class SceneGenerator {
   private final Button             skip             = new Button("Skip");
   private final Button             play             = new Button("Pause");
   private final Button             go               = new Button("Go");
+  private final Button             prev             = new Button("Prev");
   private final ProgressBar        progress         = new ProgressBar();
   private final ListView<Song>     listView         = new ListView<Song>();
 
@@ -106,6 +107,7 @@ class SceneGenerator {
     final StackPane layout = new StackPane();
 
     skip.setVisible(false);
+    prev.setVisible(false);
     play.setVisible(false);
     progress.setVisible(false);
     listView.setVisible(false);
@@ -139,6 +141,7 @@ class SceneGenerator {
 
         // enable media buttons
         skip.setVisible(true);
+        prev.setVisible(true);
         play.setVisible(true);
         progress.setVisible(true);
         listView.setVisible(true);
@@ -181,6 +184,32 @@ class SceneGenerator {
             skip.fire();
           }
         });
+      }
+    });
+
+    // when we hit prev!
+    prev.setOnAction(new EventHandler<ActionEvent>() {
+
+      public void handle(ActionEvent actionEvent) {
+
+        MediaPlayer player = mediaView.getMediaPlayer();
+        Song next = shuffler.prev(player.getCurrentTime().toSeconds(), player.getTotalDuration().toSeconds());
+
+        if (next != null) {
+          MediaPlayer nextPlayer = createPlayer(getURLFileName(next.getFileName()));
+
+          mediaView.setMediaPlayer(nextPlayer);
+          player.currentTimeProperty().removeListener(progressChangeListener);
+
+          player.stop();
+          nextPlayer.play();
+          setCurrentlyPlaying(nextPlayer);
+          nextPlayer.setOnEndOfMedia(new Runnable() {
+            public void run() {
+              skip.fire();
+            }
+          });
+        }
       }
     });
 
@@ -270,7 +299,7 @@ class SceneGenerator {
             .alignment(Pos.TOP_CENTER)
             .children(search, listView, HBoxBuilder.create().spacing(10).alignment(Pos.CENTER).children(tf, go).build(),
                 currentlyPlaying, mediaView,
-                HBoxBuilder.create().spacing(10).alignment(Pos.CENTER).children(skip, play, progress).build()).build());
+                HBoxBuilder.create().spacing(10).alignment(Pos.CENTER).children(prev, skip, play, progress).build()).build());
     progress.setMaxWidth(Double.MAX_VALUE);
     HBox.setHgrow(progress, Priority.ALWAYS);
 
